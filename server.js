@@ -45,8 +45,40 @@ app.post('/meds/add',(req,res)=>{
 });
 
 app.get('/meds',(req,res)=>{
-    res.render('meds');
+    const client = new Client({
+        user: 'postgres',
+        host: 'localhost',
+        database: 'medical',
+        password: 'asad123$',
+        port: 5432,
+    });
+    client.connect()
+        .then(()=>{
+            return client.query('Select * From meds');
+    }).then((results)=>{
+        console.log('results?',results);
+        res.render('meds',results);
+    });
 });
+
+app.post('/meds/delete/:id',(req,res)=>{
+    const client = new Client({
+        user: 'postgres',
+        host: 'localhost',
+        database: 'medical',
+        password: 'asad123$',
+        port: 5432,
+    });
+    client.connect()
+    .then(()=>{
+        const sql = 'Delete From meds WHERE mid=$1';
+        const params = [req.params.id];
+        return client.query(sql,params);
+    }).then((results)=>{
+        res.redirect('/meds');
+    });
+});
+
 
 app.listen('5001',()=>{
     console.log('Listening to port 5001');
