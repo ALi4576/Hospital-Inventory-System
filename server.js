@@ -22,6 +22,30 @@ app.get('/add',(req,res)=>{
     res.render('med-form');
 });
 
+// dashboard
+
+app.get('/dashboard',(req,res)=>{
+    const client = new Client({
+        user: 'postgres',
+        host: 'localhost',
+        database: 'medical',
+        password: 'asad123$',
+        port: 5432,
+    });
+    client.connect().then(()=>{
+        return client.query('Select SUM(count) FROM meds; Select DISTINCT COUNT(brand) FROM meds')
+    }).then((results)=>{
+        console.log('?results',results[0]);
+        console.log('?results',results[1]);
+        res.render('dashboard',{n1:results[0].rows,n2:results[1].rows})
+    }); 
+});
+
+
+
+
+
+
 app.post('/meds/add',(req,res)=>{
     console.log('post body',req.body);
 
